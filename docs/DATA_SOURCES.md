@@ -14,6 +14,7 @@ The project downloads the records on first run rather than bundling the data fil
 
 ## FDA pulse-oximeter case study
 
+- Sjoding MW, et al. [Racial Bias in Pulse Oximetry Measurement](https://doi.org/10.1056/NEJMc2029240), *New England Journal of Medicine* (2020). The authors reported more frequent occult hypoxemia not detected by pulse oximetry among Black than White patients in two hospital cohorts, with implications during the COVID-19 pandemic.
 - [FDA: Pulse Oximeters](https://www.fda.gov/medical-devices/products-and-medical-procedures/pulse-oximeters) — describes accuracy limitations, the 2021 safety communication, and FDA work concerning skin pigmentation.
 - [FDA 2025 draft guidance: Pulse Oximeters for Medical Purposes](https://www.fda.gov/regulatory-information/search-fda-guidance-documents/pulse-oximeters-medical-purposes-non-clinical-and-clinical-performance-testing-labeling-and) — draft, non-binding recommendations for performance testing and labeling.
 

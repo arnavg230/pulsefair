@@ -22,7 +22,7 @@ The project combines explainability with fairness auditing. SHAP and LIME expose
 
 ## Pulse-oximeter case study
 
-The FDA describes known pulse-oximeter accuracy limitations and factors that may affect readings, including skin pigmentation. FDA materials also include a January 2025 draft guidance proposing performance-evaluation recommendations across skin tones. This case is relevant because pulse oximeters use optical sensing; it does not establish that this ECG model or dataset exhibits the same issue. See [DATA_SOURCES.md](DATA_SOURCES.md) for primary-source links.
+During the COVID-19 pandemic, a 2020 study reported that occult hypoxemia missed by pulse oximetry occurred nearly three times as often among Black as White patients in two hospital cohorts. The FDA's safety materials describe skin pigmentation among factors that can affect readings, and its January 2025 draft guidance proposes performance-evaluation recommendations across skin tones. This case is relevant because pulse oximeters use optical sensing; it does not establish that this ECG model or dataset exhibits the same issue. Race is not a direct measure of skin pigmentation. See [DATA_SOURCES.md](DATA_SOURCES.md) for sources.
 
 ## Questions for classmates
 
