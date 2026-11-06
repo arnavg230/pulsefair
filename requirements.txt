@@ -1,0 +1,7 @@
+numpy>=1.24,<2.3
+pandas>=2.0,<4
+scikit-learn>=1.4,<1.8
+fairlearn>=0.12,<0.14
+shap>=0.46,<0.55
+lime>=0.2,<0.3
+wfdb>=4.1,<5
