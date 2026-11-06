@@ -6,27 +6,28 @@
 - Beat windows: 109,464; subject-level train/validation/test split to avoid the same person appearing across splits.
 - Task: distinguish normal (`N`) beats from other beat annotations. This is not an atrial-fibrillation diagnosis.
 - Cohorts: sex and broad age bands parsed from available headers. Race and skin pigmentation are not present.
+- Group metrics are beat-weighted; subject counts are shown separately because beats from one person are correlated.
 - FPR parity is calibrated on validation data and evaluated on held-out subjects; Fairlearn may randomize post-processed predictions.
 
 ## Sex cohorts
 
-| Policy | Group | Beats | Accuracy | FPR | FNR | TPR | Selection rate |
-|---|---|---:|---:|---:|---:|---:|---:|
-| base | F | 11797 | 0.662 | 0.060 | 0.646 | 0.354 | 0.200 |
-| base | M | 9734 | 0.758 | 0.263 | 0.050 | 0.950 | 0.330 |
-| adjusted | F | 11797 | 0.782 | 0.083 | 0.367 | 0.633 | 0.345 |
-| adjusted | M | 9734 | 0.715 | 0.312 | 0.036 | 0.964 | 0.376 |
-Unknown cohort metadata, omitted from this audit: 2154 test beats.
+| Policy | Group | Subjects | Beats | Accuracy | FPR | FNR | TPR | Selection rate |
+|---|---|---:|---:|---:|---:|---:|---:|---:|
+| base | F | 6 | 11797 | 0.662 | 0.060 | 0.646 | 0.354 | 0.200 |
+| base | M | 3 | 9734 | 0.758 | 0.263 | 0.050 | 0.950 | 0.330 |
+| adjusted | F | 6 | 11797 | 0.782 | 0.083 | 0.367 | 0.633 | 0.345 |
+| adjusted | M | 3 | 9734 | 0.715 | 0.312 | 0.036 | 0.964 | 0.376 |
+Unknown cohort metadata, omitted from this audit: 1 test subjects / 2154 test beats.
 
 ## Age cohorts
 
-| Policy | Group | Beats | Accuracy | FPR | FNR | TPR | Selection rate |
-|---|---|---:|---:|---:|---:|---:|---:|
-| base | 60 and over | 14101 | 0.686 | 0.096 | 0.607 | 0.393 | 0.223 |
-| base | Under 60 | 7430 | 0.741 | 0.277 | 0.033 | 0.967 | 0.327 |
-| adjusted | 60 and over | 14101 | 0.737 | 0.111 | 0.467 | 0.533 | 0.291 |
-| adjusted | Under 60 | 7430 | 0.700 | 0.322 | 0.022 | 0.978 | 0.369 |
-Unknown cohort metadata, omitted from this audit: 2154 test beats.
+| Policy | Group | Subjects | Beats | Accuracy | FPR | FNR | TPR | Selection rate |
+|---|---|---:|---:|---:|---:|---:|---:|---:|
+| base | 60 and over | 6 | 14101 | 0.686 | 0.096 | 0.607 | 0.393 | 0.223 |
+| base | Under 60 | 3 | 7430 | 0.741 | 0.277 | 0.033 | 0.967 | 0.327 |
+| adjusted | 60 and over | 6 | 14101 | 0.737 | 0.111 | 0.467 | 0.533 | 0.291 |
+| adjusted | Under 60 | 3 | 7430 | 0.700 | 0.322 | 0.022 | 0.978 | 0.369 |
+Unknown cohort metadata, omitted from this audit: 1 test subjects / 2154 test beats.
 
 ## Fairness gaps
 

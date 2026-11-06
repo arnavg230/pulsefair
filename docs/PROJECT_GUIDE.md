@@ -27,7 +27,7 @@ The dashboard plots a selected annotated beat and colors approximate P, QRS, ST,
 
 ## Fairness audit and mitigation
 
-Fairlearn MetricFrame reports accuracy, false-positive rate (FPR), false-negative rate (FNR), true-positive rate (TPR), and selection rate for available sex and age-band groups. The report also calculates demographic-parity and equalized-odds differences.
+Fairlearn MetricFrame reports accuracy, false-positive rate (FPR), false-negative rate (FNR), true-positive rate (TPR), and selection rate for available sex and age-band groups. The report also calculates demographic-parity and equalized-odds differences. Tables show both the number of distinct subjects and the number of beat rows in each group. The rates themselves are beat-weighted, so the beat count is not an independent sample size; subjects can contribute many correlated beats.
 
 Fairlearn ThresholdOptimizer is fitted only on validation beats with an FPR-parity constraint and balanced-accuracy objective. Predictions are evaluated on held-out subjects. The postprocessor can randomize decisions and requires group membership at prediction time. Compare all metrics: matching FPR can increase FNR, change selection rates, or lower accuracy. The small cohort counts and repeated beats mean these estimates are exploratory, not population-level evidence.
 

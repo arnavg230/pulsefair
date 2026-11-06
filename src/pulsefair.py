@@ -164,12 +164,15 @@ def build_dataset() -> tuple[pd.DataFrame, dict[str, dict]]:
     return frame, sample_waveforms
 
 
-def metric_table(y: pd.Series, pred: np.ndarray, group: pd.Series) -> dict:
+def metric_table(y: pd.Series, pred: np.ndarray, group: pd.Series, subjects: pd.Series) -> dict:
     frame = MetricFrame(metrics=METRICS, y_true=y, y_pred=pred, sensitive_features=group)
+    subject_counts = pd.DataFrame({"group": np.asarray(group).astype(str),
+                                   "subject": np.asarray(subjects).astype(str)}).groupby("group")["subject"].nunique()
     result = {}
     for cohort, row in frame.by_group.iterrows():
         result[str(cohort)] = {name: int(value) if name == "n_beats" else float(value)
                                for name, value in row.items()}
+        result[str(cohort)]["n_subjects"] = int(subject_counts[str(cohort)])
     y_array = np.asarray(y)
     result["_summary"] = {
         "demographic_parity_difference": float(demographic_parity_difference(y_array, pred, sensitive_features=np.asarray(group))),
@@ -233,7 +236,7 @@ def write_dashboard(path: Path, payload: dict) -> None:
 <section class="card"><h2>Inspect a held-out beat</h2><select id="sample"></select><div id="wave"></div><div class="tabs"><button class="active" data-tab="shap">SHAP</button><button data-tab="lime">LIME</button></div><div id="explanation"></div></section>
 <section class="card"><h2>COVID-19 case study: pulse oximetry</h2><p>A 2020 hospital-cohort study found occult hypoxemia missed by pulse oximetry occurred nearly three times as often in Black patients as White patients. The FDA lists skin pigmentation among factors that can affect readings and later proposed broader performance testing. This is adjacent optical-sensor evidence; it does not imply the ECG dataset or this model has the same disparity. Race is not a direct skin-tone measurement.</p><a href="https://doi.org/10.1056/NEJMc2029240">Sjoding et al., NEJM 2020</a> · <a href="https://www.fda.gov/medical-devices/products-and-medical-procedures/pulse-oximeters">FDA: Pulse Oximeters</a> · <a href="https://www.fda.gov/regulatory-information/search-fda-guidance-documents/pulse-oximeters-medical-purposes-non-clinical-and-clinical-performance-testing-labeling-and">FDA draft performance guidance (2025)</a></section>
 <footer>Source data: PhysioNet MIT-BIH Arrhythmia Database · ODC-By 1.0 attribution required · See README and docs for citations and limitations.</footer></div><script type="application/json" id="data">__DATA__</script><script>
-const D=JSON.parse(document.getElementById('data').textContent),pc=x=>(100*x).toFixed(1)+'%';function table(obj){let gs=Object.keys(obj).filter(k=>!k.startsWith('_'));return '<table><tr><th>Group</th><th>Beats</th><th>Accuracy</th><th>FPR</th><th>FNR</th><th>TPR</th><th>Flag rate</th></tr>'+gs.map(g=>{let m=obj[g];return `<tr><td>${g}</td><td>${m.n_beats}</td><td>${pc(m.accuracy)}</td><td>${pc(m.fpr)}</td><td>${pc(m.fnr)}</td><td>${pc(m.tpr)}</td><td>${pc(m.selection_rate)}</td></tr>`}).join('')+'</table>'}document.getElementById('dataset').textContent=`${D.n_beats.toLocaleString()} annotated beats · ${D.n_records} records · ${D.n_subjects} subjects · train/validation/test split by subject`;document.getElementById('sexbase').innerHTML=table(D.audit.sex.base);document.getElementById('sexadj').innerHTML=table(D.audit.sex.adjusted);document.getElementById('ageaudit').innerHTML='<h3>Shared probability threshold 0.50</h3>'+table(D.audit.age.base)+'<h3>FPR parity post-processing</h3>'+table(D.audit.age.adjusted);document.getElementById('deltas').innerHTML=Object.entries(D.audit).map(([k,v])=>`<p><b>${k}:</b> validation FPR gap ${pc(v.validation_base._summary.fpr_gap)} → ${pc(v.validation_adjusted._summary.fpr_gap)}; held-out FPR gap ${pc(v.base._summary.fpr_gap)} → ${pc(v.adjusted._summary.fpr_gap)} · unknown metadata omitted ${v.unknown_test_beats} beats</p>`).join('');document.getElementById('importance').innerHTML=D.importance.map(([k,v])=>`<div class="bars"><span>${k.replaceAll('_',' ')}</span><div class="track"><div class="fill" style="width:${Math.max(1,v/D.importance[0][1]*100)}%"></div></div><b>${v.toFixed(4)}</b></div>`).join('');
+const D=JSON.parse(document.getElementById('data').textContent),pc=x=>(100*x).toFixed(1)+'%';function table(obj){let gs=Object.keys(obj).filter(k=>!k.startsWith('_'));return '<table><tr><th>Group</th><th>Subjects</th><th>Beats</th><th>Accuracy</th><th>FPR</th><th>FNR</th><th>TPR</th><th>Flag rate</th></tr>'+gs.map(g=>{let m=obj[g];return `<tr><td>${g}</td><td>${m.n_subjects}</td><td>${m.n_beats}</td><td>${pc(m.accuracy)}</td><td>${pc(m.fpr)}</td><td>${pc(m.fnr)}</td><td>${pc(m.tpr)}</td><td>${pc(m.selection_rate)}</td></tr>`}).join('')+'</table>'}document.getElementById('dataset').textContent=`${D.n_beats.toLocaleString()} annotated beats · ${D.n_records} records · ${D.n_subjects} subjects · train/validation/test split by subject`;document.getElementById('sexbase').innerHTML=table(D.audit.sex.base);document.getElementById('sexadj').innerHTML=table(D.audit.sex.adjusted);document.getElementById('ageaudit').innerHTML='<h3>Shared probability threshold 0.50</h3>'+table(D.audit.age.base)+'<h3>FPR parity post-processing</h3>'+table(D.audit.age.adjusted);document.getElementById('deltas').innerHTML=Object.entries(D.audit).map(([k,v])=>`<p><b>${k}:</b> validation FPR gap ${pc(v.validation_base._summary.fpr_gap)} → ${pc(v.validation_adjusted._summary.fpr_gap)}; held-out FPR gap ${pc(v.base._summary.fpr_gap)} → ${pc(v.adjusted._summary.fpr_gap)} · unknown metadata omitted ${v.unknown_test_subjects} subjects / ${v.unknown_test_beats} beats</p>`).join('');document.getElementById('importance').innerHTML=D.importance.map(([k,v])=>`<div class="bars"><span>${k.replaceAll('_',' ')}</span><div class="track"><div class="fill" style="width:${Math.max(1,v/D.importance[0][1]*100)}%"></div></div><b>${v.toFixed(4)}</b></div>`).join('');
 const sel=document.getElementById('sample');D.examples.forEach((e,i)=>{let o=document.createElement('option');o.value=i;o.textContent=`${e.id} · ${e.sex} · ${e.age_band} · ${e.score.toFixed(2)} · ${e.label}`;sel.appendChild(o)});let activeTab='shap';function render(){let e=D.examples[sel.value];document.getElementById('wave').innerHTML=`<p><span class="chip">${e.sex}</span> <span class="chip">${e.age_band}</span> <span class="chip">${e.record_id}</span></p>${e.svg}<p class="score">${(e.score*100).toFixed(1)}% <span class="muted" style="font-size:14px">abnormal-beat model score · ${e.prediction?'flagged':'not flagged'} · reference ${e.label}</span></p>`;let obj=e[activeTab];document.getElementById('explanation').innerHTML=`<p class="muted">${activeTab==='shap'?'TreeSHAP contributions add to the model output from a baseline.':'LIME fits a local interpretable surrogate around this example; contributions are approximate.'}</p>`+Object.entries(obj).map(([k,v])=>{let w=Math.min(49,Math.abs(v)*300);return `<div class="contrib"><span>${k.replaceAll('_',' ')}</span><div class="axis"><i class="zero"></i><i class="${v>=0?'pos':'neg'}" style="width:${w}%"></i></div><b>${v>=0?'+':''}${v.toFixed(4)}</b></div>`}).join('')}sel.addEventListener('change',render);document.querySelectorAll('.tabs button').forEach(b=>b.addEventListener('click',()=>{activeTab=b.dataset.tab;document.querySelectorAll('.tabs button').forEach(x=>x.classList.toggle('active',x===b));render()}));render();
 </script></html>'''.replace("__DATA__", data)
     path.write_text(page, encoding="utf-8")
@@ -265,23 +268,26 @@ def main() -> None:
         group = test[name].fillna("Unknown").astype(str)
         known_test = group != "Unknown"
         eval_group = group.loc[known_test]
-        base = metric_table(y_test.loc[known_test], base_pred[known_test.to_numpy()], eval_group)
+        test_subjects = test.loc[known_test, "subject_id"]
+        base = metric_table(y_test.loc[known_test], base_pred[known_test.to_numpy()], eval_group, test_subjects)
         validation_group = frame.loc[frame.split == "validation", name].fillna("Unknown").astype(str)
         known_val = validation_group != "Unknown"
         val_group = validation_group.loc[known_val]
-        val_base = metric_table(y_val.loc[known_val], val_base_pred[known_val.to_numpy()], val_group)
+        val_subjects = frame.loc[frame.split == "validation", "subject_id"].loc[known_val]
+        val_base = metric_table(y_val.loc[known_val], val_base_pred[known_val.to_numpy()], val_group, val_subjects)
         optimizer = fit_fpr_optimizer(model, X_val.loc[known_val], y_val.loc[known_val], val_group)
         if optimizer is not None:
             pred = optimizer.predict(X_test.loc[known_test], sensitive_features=eval_group, random_state=42)
-            adjusted = metric_table(y_test.loc[known_test], pred, eval_group)
+            adjusted = metric_table(y_test.loc[known_test], pred, eval_group, test_subjects)
             val_pred = optimizer.predict(X_val.loc[known_val], sensitive_features=val_group, random_state=42)
-            val_adjusted = metric_table(y_val.loc[known_val], val_pred, val_group)
+            val_adjusted = metric_table(y_val.loc[known_val], val_pred, val_group, val_subjects)
         else:
             adjusted = base
             val_adjusted = val_base
         audit_results[name] = {"base": base, "adjusted": adjusted,
                                "validation_base": val_base, "validation_adjusted": val_adjusted,
-                               "unknown_test_beats": int((~known_test).sum())}
+                               "unknown_test_beats": int((~known_test).sum()),
+                               "unknown_test_subjects": int(test.loc[~known_test, "subject_id"].nunique())}
 
     # SHAP on a bounded sample of test beats keeps the first run manageable.
     explain_count = min(600, len(X_test))
@@ -330,14 +336,15 @@ def main() -> None:
                     f"- Beat windows: {payload['n_beats']:,}; subject-level train/validation/test split to avoid the same person appearing across splits.",
                     "- Task: distinguish normal (`N`) beats from other beat annotations. This is not an atrial-fibrillation diagnosis.",
                     "- Cohorts: sex and broad age bands parsed from available headers. Race and skin pigmentation are not present.",
+                    "- Group metrics are beat-weighted; subject counts are shown separately because beats from one person are correlated.",
                     "- FPR parity is calibrated on validation data and evaluated on held-out subjects; Fairlearn may randomize post-processed predictions.", ""]
     for name, title in (("sex", "Sex cohorts"), ("age_band", "Age cohorts")):
-        output_lines += [f"## {title}", "", "| Policy | Group | Beats | Accuracy | FPR | FNR | TPR | Selection rate |", "|---|---|---:|---:|---:|---:|---:|---:|"]
+        output_lines += [f"## {title}", "", "| Policy | Group | Subjects | Beats | Accuracy | FPR | FNR | TPR | Selection rate |", "|---|---|---:|---:|---:|---:|---:|---:|---:|"]
         for policy in ("base", "adjusted"):
             for group_name, m in audit_results[name][policy].items():
                 if group_name == "_summary": continue
-                output_lines.append(f"| {policy} | {group_name} | {m['n_beats']} | {m['accuracy']:.3f} | {m['fpr']:.3f} | {m['fnr']:.3f} | {m['tpr']:.3f} | {m['selection_rate']:.3f} |")
-        output_lines.append(f"Unknown cohort metadata, omitted from this audit: {audit_results[name]['unknown_test_beats']} test beats.\n")
+                output_lines.append(f"| {policy} | {group_name} | {m['n_subjects']} | {m['n_beats']} | {m['accuracy']:.3f} | {m['fpr']:.3f} | {m['fnr']:.3f} | {m['tpr']:.3f} | {m['selection_rate']:.3f} |")
+        output_lines.append(f"Unknown cohort metadata, omitted from this audit: {audit_results[name]['unknown_test_subjects']} test subjects / {audit_results[name]['unknown_test_beats']} test beats.\n")
     output_lines += ["## Fairness gaps", "", "| Attribute | Policy | FPR gap | Demographic-parity difference | Equalized-odds difference |", "|---|---|---:|---:|---:|"]
     for name in ("sex", "age_band"):
         policies = (("validation_base", "Validation · shared threshold"),

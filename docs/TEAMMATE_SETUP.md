@@ -84,7 +84,7 @@ The dashboard is a local HTML file. Its tables, waveform, and explanations work 
 ## Generated outputs
 
 - `output/index.html`: interactive cohort tables, fairness-gap comparisons, global SHAP feature summary, a waveform with approximate P/QRS/ST/T windows, and SHAP/LIME explanations for selected test beats.
-- `output/report.md`: text tables for held-out cohort performance and fairness gaps on both validation and test data.
+- `output/report.md`: text tables for held-out cohort performance and fairness gaps on both validation and test data. Cohort tables show distinct subject count beside beat count; metrics remain beat-weighted.
 - `output/mitbih_beats.csv`: one row per extracted beat. `sample_id` identifies a record and annotation sample; `record_id` is the source recording; `subject_id` keeps repeated records from one person together; `split` is train/validation/test; `sex`, `age`, and `age_band` are audit metadata; `annotation` is the WFDB beat symbol; `target` is 0 for `N` and 1 for any other included beat symbol. Remaining columns are extracted waveform features.
 
 The waveform CSV contains derived features, not raw ECG samples. The original WFDB signals remain in `data/mitdb/` under their own license.
