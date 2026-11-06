@@ -8,16 +8,17 @@ PulseFair trains a Random Forest on **real, annotated ECG beats** from the MIT-B
 
 ## Run locally
 
-Use Python 3.10–3.12. Install the dependencies, then run the pipeline:
+Use Python 3.10–3.12. For a clean-clone walkthrough, troubleshooting, and output/CSV explanations, see [TEAMMATE_SETUP.md](docs/TEAMMATE_SETUP.md).
+
+On Windows PowerShell, install and run with the virtual-environment Python directly (activation is optional):
 
 ```powershell
 python -m venv .venv
-.venv\Scripts\Activate.ps1
-python -m pip install -r requirements.txt
-python src\pulsefair.py
+.venv\Scripts\python.exe -m pip install -r requirements.txt
+.venv\Scripts\python.exe src\pulsefair.py
 ```
 
-On macOS/Linux, activate with `source .venv/bin/activate` and run `python src/pulsefair.py`.
+On macOS/Linux, use `python3 -m venv .venv`, then `.venv/bin/python -m pip install -r requirements.txt` and `.venv/bin/python src/pulsefair.py`.
 
 The first run downloads the MIT-BIH signal files and beat annotations from PhysioNet into `data/mitdb/` (about 95 MB). It then creates:
 
@@ -56,6 +57,7 @@ requirements.txt       Python libraries
 docs/PROJECT_GUIDE.md  Pipeline, metrics, and presentation outline
 docs/ETHICS_NOTES.md   Ethical limitations and discussion questions
 docs/DATA_SOURCES.md   Dataset citation, license, FDA case-study sources
+docs/TEAMMATE_SETUP.md Fresh-computer setup, troubleshooting, output/CSV guide
 output/                Generated dashboard, results, and extracted feature CSV
 ```
 
