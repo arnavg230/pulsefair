@@ -10,7 +10,7 @@ Moody GB, Mark RG. *The MIT-BIH Arrhythmia Database*. PhysioNet. The database co
 - DOI: [10.13026/C2F305](https://doi.org/10.13026/C2F305)
 - Data license: Open Data Commons Attribution License v1.0, as stated on the PhysioNet database page.
 
-The project downloads the records on first run rather than bundling the data files in this repository. The public dataset description includes age and sex information, but no skin-pigmentation metadata. The audit uses age bands and sex only; it does not infer or fabricate skin tone.
+The project downloads the records on first run rather than bundling the data files in this repository. The project uses the age and sex fields available in the public dataset to define audit cohorts.
 
 ## FDA pulse-oximeter case study
 

@@ -15,14 +15,13 @@ The project combines explainability with fairness auditing. SHAP and LIME expose
 
 - A claim about clinical ECG devices or patient outcomes.
 - An atrial-fibrillation diagnosis: the task is `N` versus other beat annotation symbols.
-- A skin-tone fairness finding: MIT-BIH contains no skin-pigmentation field.
 - Population-level conclusions from 47 subjects, especially when beat observations from one subject are correlated.
 - Causal claims from SHAP/LIME feature attribution.
 - A claim that equal FPR is the only or correct fairness goal.
 
 ## Pulse-oximeter case study
 
-During the COVID-19 pandemic, a 2020 study reported that occult hypoxemia missed by pulse oximetry occurred nearly three times as often among Black as White patients in two hospital cohorts. The FDA's safety materials describe skin pigmentation among factors that can affect readings, and its January 2025 draft guidance proposes performance-evaluation recommendations across skin tones. This case is relevant because pulse oximeters use optical sensing; it does not establish that this ECG model or dataset exhibits the same issue. Race is not a direct measure of skin pigmentation. See [DATA_SOURCES.md](DATA_SOURCES.md) for sources.
+During the COVID-19 pandemic, a 2020 study reported that occult hypoxemia missed by pulse oximetry occurred nearly three times as often among Black as White patients in two hospital cohorts. The FDA's safety materials describe skin pigmentation among factors that can affect readings, and its January 2025 draft guidance proposes performance-evaluation recommendations across skin tones. This case is relevant because pulse oximeters use optical sensing. It provides context for discussing healthcare sensor fairness alongside the project’s separate ECG cohort audit. See [DATA_SOURCES.md](DATA_SOURCES.md) for sources.
 
 ## Questions for classmates
 
@@ -30,5 +29,5 @@ During the COVID-19 pandemic, a 2020 study reported that occult hypoxemia missed
 2. Which error matters most here: false alarms or missed abnormal beats? Who should set that priority?
 3. What trade-offs appear when Fairlearn adjusts predictions to target equal FPR?
 4. Why might SHAP and LIME assign different feature contributions to the same beat?
-5. What protected attributes and signal-quality variables would a valid PPG skin-pigmentation audit need?
+5. How should small subject counts and repeated beats affect confidence in group fairness metrics?
 6. What validation, clinical oversight, privacy protections, and regulatory evaluation would be required before real-world use?

@@ -29,7 +29,7 @@ The script downloads the MIT-BIH Arrhythmia Database and reads ECG recordings an
 
 The window boundaries are fixed engineering choices. They support a visible, explainable demonstration but are not clinically validated waveform delineations. The data contain 48 records from 47 subjects; repeated beats from a subject are correlated observations.
 
-The original idea focused on skin-pigmentation disparities in optical PPG devices. MIT-BIH is an ECG dataset and has no skin-pigmentation labels. PulseFair therefore cannot test the original skin-tone hypothesis. The available age and sex metadata support a related cohort audit, while the pulse-oximeter case study supplies context about why sensor fairness matters. That case study is not evidence about this model's error rates.
+PulseFair uses the available age and sex metadata for its cohort audit. The pulse-oximeter case study supplies broader healthcare-sensor context; it is a separate evidence source from this ECG experiment.
 
 ## Pipeline at a glance
 
@@ -93,13 +93,13 @@ A clear presentation can follow this sequence:
 4. Compare SHAP and LIME for a held-out beat and describe them as model-behavior explanations.
 5. Compare group FPR/FNR and related measures before and after the adjustment.
 6. Compare validation and held-out results, then discuss why parity on one split is not proof of a fair system.
-7. State that no skin-pigmentation audit is possible from this dataset and frame the pulse-oximeter evidence as related context only.
+7. Describe the age/sex cohorts used in the audit and distinguish the pulse-oximeter case study as related context.
 
 ## Limitations to keep visible in discussion
 
 - MIT-BIH is historical and small, with 47 subjects in this project.
 - Repeated beat rows are not independent patient samples; group rates are exploratory.
-- Available demographics are limited age/sex fields; there are no skin-pigmentation labels.
+- Audits use available age/sex metadata and small subject cohorts.
 - The binary annotation task is not disease diagnosis, AF detection, or patient-level risk prediction.
 - P/QRS/ST/T feature windows and QRS-width proxy are approximate.
 - SHAP and LIME do not establish cause, clinical reasoning, or safety.

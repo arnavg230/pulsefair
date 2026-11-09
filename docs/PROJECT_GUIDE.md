@@ -4,7 +4,7 @@
 
 This classroom prototype asks two questions: do normal/abnormal ECG beat-classification errors vary across available age and sex cohorts, and can local explanations help people inspect individual model behavior?
 
-The original idea focuses on PPG skin-pigmentation disparities. MIT-BIH provides real ECG waveforms and some age/sex information, but no skin-pigmentation field. This project therefore demonstrates a related demographic audit without claiming to test that original skin-tone hypothesis.
+The project uses available age and sex metadata to compare ECG classification errors across cohorts. The pulse-oximeter case study provides broader context about fairness in healthcare sensors.
 
 ## Data and labels
 
@@ -45,7 +45,7 @@ Fairlearn ThresholdOptimizer is fitted only on validation beats with an FPR-pari
 3. Explain why beat-label classification is not AF diagnosis.
 4. Compare FPR/FNR before and after post-processing across age and sex cohorts.
 5. Contrast SHAP with LIME on one beat.
-6. Discuss the missing pigmentation metadata and connect the separate FDA pulse-oximeter case study.
+6. Summarize the age/sex cohort audit and connect the separate FDA pulse-oximeter case study as broader healthcare-sensor context.
 
 ## Code tour
 

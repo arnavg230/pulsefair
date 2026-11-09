@@ -4,7 +4,7 @@
 
 PulseFair is a small, reproducible experiment about how an AI model classifies heartbeats, how we can inspect its decisions, and whether its errors differ across demographic groups. It uses annotated ECG recordings from the MIT-BIH Arrhythmia Database and provides a browser dashboard plus a written report.
 
-> **Educational project only.** This is not a medical device or a clinical model. MIT-BIH is a small historical dataset. Its public metadata has no skin-pigmentation labels, so this project cannot test skin-tone disparities. The waveform windows are educational approximations, not clinical ECG delineation.
+> **Educational project only.** This is not a medical device or a clinical model. MIT-BIH is a small historical dataset. The waveform windows are educational approximations, not clinical ECG delineation.
 
 ## The question this project explores
 
@@ -91,7 +91,7 @@ Both methods describe model behavior. Neither establishes physiological cause, c
 
 - “Other/abnormal” means an annotation other than `N`; it is not atrial fibrillation, a disease diagnosis, or a patient-level outcome.
 - MIT-BIH is historical and has only 47 subjects in this project. Group results are exploratory and should not be generalized to a population.
-- The dataset has limited age/sex metadata, but no skin-pigmentation labels. This project therefore cannot test the original idea's skin-tone fairness question.
+- Group comparisons use the age and sex metadata available in MIT-BIH; they are exploratory and limited by the small number of subjects.
 - The FDA pulse-oximeter case study is related context about optical sensors, not evidence that this ECG dataset or model has the same disparity. Race is not a direct measurement of skin tone.
 - The fixed waveform windows and width estimate are approximate signal features, not validated P/QRS/ST segmentation.
 - Fairness post-processing and equal FPR do not by themselves establish fairness; thresholding can involve trade-offs and use group membership.
@@ -119,7 +119,7 @@ data/mitdb/            Downloaded dataset files (created on first run; ignored b
 3. Show how subjects are separated into train, validation, and held-out sets.
 4. Inspect a waveform and compare SHAP and LIME for the same held-out beat.
 5. Compare age/sex error metrics before and after the validation-fitted threshold adjustment, then discuss what happened on held-out subjects.
-6. Explain that skin-pigmentation labels are absent, and use the pulse-oximeter case as adjacent context rather than a result of this experiment.
+6. Explain that the audit uses available age and sex metadata, and introduce the pulse-oximeter case as related healthcare-sensor context.
 
 ## License
 
