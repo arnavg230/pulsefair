@@ -5,7 +5,7 @@
 - Source: PhysioNet MIT-BIH Arrhythmia Database (48 records, 47 subjects).
 - Beat windows: 109,464; subject-level train/validation/test split to avoid the same person appearing across splits.
 - Task: distinguish normal (`N`) beats from other beat annotations. This is not an atrial-fibrillation diagnosis.
-- Cohorts: sex and broad age bands parsed from available headers. Race and skin pigmentation are not present.
+- Cohorts: sex and broad age bands parsed from available headers.
 - Group metrics are beat-weighted; subject counts are shown separately because beats from one person are correlated.
 - FPR parity is calibrated on validation data and evaluated on held-out subjects; Fairlearn may randomize post-processed predictions.
 
@@ -66,4 +66,4 @@ Mean absolute contribution across a sample of held-out beats; model importance i
 
 ## Limits
 
-MIT-BIH is a small historical ECG dataset with limited demographic metadata. No skin pigmentation is supplied, so this project does not test the screenshot's specific skin-tone disparity hypothesis. Fixed P/QRS/ST/T windows are rough signal features, not clinically validated delineation. SHAP and LIME explain model behavior, not causality or clinical reasoning. See `docs/ETHICS_NOTES.md` for the FDA pulse-oximeter case study and references.
+MIT-BIH is a small historical ECG dataset with limited demographic metadata. The cohort audit uses available age and sex fields. Fixed P/QRS/ST/T windows are approximate signal features, not clinically validated delineation. SHAP and LIME describe model behavior, not causality or clinical reasoning. See `docs/ETHICS_NOTES.md` for the FDA pulse-oximeter case study and references.

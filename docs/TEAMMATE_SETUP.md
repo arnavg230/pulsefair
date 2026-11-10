@@ -7,8 +7,8 @@ This guide assumes a new computer with no Python packages and no PhysioNet data 
 Either clone the GitHub repository:
 
 ```powershell
-git clone <repository-url>
-cd <repository-folder>
+git clone https://github.com/arnavg230/pulsefair.git
+cd pulsefair
 ```
 
 Or download the repository ZIP from GitHub, extract it, and open PowerShell in the extracted project folder (the folder containing `README.md`).
@@ -107,7 +107,7 @@ Make sure the install command used the same `.venv` Python as the run command. R
 
 ### PhysioNet download fails
 
-Check internet access, then rerun the script. WFDB can resume or reuse files in `data/mitdb/`. If the network is blocked on your campus, open the MIT-BIH access page linked in `docs/DATA_SOURCES.md` on an allowed connection and ask the team to transfer the downloaded database folder; place its record files under `data/mitdb/`.
+Check internet access, then rerun the script. WFDB can resume or reuse files in `data/mitdb/`. If the network is blocked on your campus, open the MIT-BIH access page linked in `docs/DATA_SOURCES.md` on an allowed connection and ask the team to transfer the downloaded database folder; place its record files under `data/mitdb/`. The script checks for all 48 recordings before training and reports an incomplete download instead of silently producing results from a partial dataset.
 
 ### Dashboard is not refreshed
 

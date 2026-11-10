@@ -11,8 +11,10 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 LOCAL_PACKAGES = ROOT / ".local_packages"
+# Use compatible packages from the active Python environment first; the ignored
+# local cache is only a fallback for packages that environment does not provide.
 if LOCAL_PACKAGES.is_dir():
-    sys.path.insert(0, str(LOCAL_PACKAGES))
+    sys.path.append(str(LOCAL_PACKAGES))
 
 import lime.lime_tabular
 import numpy as np
@@ -43,13 +45,31 @@ METRICS = {"accuracy": accuracy_score, "fpr": false_positive_rate,
            "selection_rate": selection_rate, "n_beats": count}
 
 
+def available_record_ids(suffix: str) -> set[str]:
+    """Return numeric MIT-BIH record IDs that have a file with this suffix."""
+    return {path.stem for path in DATA_DIR.glob(f"*.{suffix}") if path.stem.isdigit()}
+
+
+def mitdb_is_complete() -> bool:
+    """Check the full 48-record database is present before training."""
+    headers = available_record_ids("hea")
+    return (len(headers) == 48
+            and headers.issubset(available_record_ids("dat"))
+            and headers.issubset(available_record_ids("atr")))
+
+
 def download_if_needed() -> None:
-    """Download MIT-BIH records and beat annotations once, into ignored data/."""
+    """Download MIT-BIH records and annotations when the local cache is incomplete."""
     DATA_DIR.mkdir(parents=True, exist_ok=True)
-    if (DATA_DIR / "100.hea").exists() and (DATA_DIR / "100.atr").exists():
+    if mitdb_is_complete():
         return
-    print("Downloading MIT-BIH Arrhythmia Database from PhysioNet (about 110 MB)...")
+    print("Downloading or completing MIT-BIH Arrhythmia Database from PhysioNet (about 95 MB)...")
     wfdb.dl_database("mitdb", str(DATA_DIR), records="all", annotators=["atr"], keep_subdirs=False)
+    if not mitdb_is_complete():
+        raise RuntimeError(
+            f"MIT-BIH download is incomplete in {DATA_DIR}. Check the PhysioNet connection "
+            "and rerun the program."
+        )
 
 
 def subject_info(record_id: str) -> tuple[str, int | None]:
@@ -100,8 +120,11 @@ def summarize_segment(segment: np.ndarray, fs: int) -> dict[str, float]:
 def build_dataset() -> tuple[pd.DataFrame, dict[str, dict]]:
     download_if_needed()
     records = sorted(p.stem for p in DATA_DIR.glob("*.hea") if p.stem.isdigit())
-    if not records:
-        raise RuntimeError(f"No MIT-BIH headers found in {DATA_DIR}; see README for download help.")
+    if len(records) != 48:
+        raise RuntimeError(
+            f"Expected 48 MIT-BIH records in {DATA_DIR}, found {len(records)}. "
+            "Check the dataset download and rerun the program."
+        )
     record_metadata = {}
     records_and_subjects = []
     for record_id in records:
@@ -336,7 +359,7 @@ def main() -> None:
                     f"- Source: PhysioNet MIT-BIH Arrhythmia Database ({payload['n_records']} records, {payload['n_subjects']} subjects).",
                     f"- Beat windows: {payload['n_beats']:,}; subject-level train/validation/test split to avoid the same person appearing across splits.",
                     "- Task: distinguish normal (`N`) beats from other beat annotations. This is not an atrial-fibrillation diagnosis.",
-                    "- Cohorts: sex and broad age bands parsed from available headers. Race and skin pigmentation are not present.",
+                    "- Cohorts: sex and broad age bands parsed from available headers.",
                     "- Group metrics are beat-weighted; subject counts are shown separately because beats from one person are correlated.",
                     "- FPR parity is calibrated on validation data and evaluated on held-out subjects; Fairlearn may randomize post-processed predictions.", ""]
     for name, title in (("sex", "Sex cohorts"), ("age_band", "Age cohorts")):
@@ -357,11 +380,11 @@ def main() -> None:
             output_lines.append(f"| {name} | {policy_label} | {summary['fpr_gap']:.3f} | {summary['demographic_parity_difference']:.3f} | {summary['equalized_odds_difference']:.3f} |")
     output_lines += ["", "## SHAP global feature importance", "", "Mean absolute contribution across a sample of held-out beats; model importance is not medical importance.", "", "| Feature | Mean absolute SHAP |", "|---|---:|"]
     output_lines.extend(f"| {name} | {value:.5f} |" for name, value in importance)
-    output_lines += ["", "## Limits", "", "MIT-BIH is a small historical ECG dataset with limited demographic metadata. No skin pigmentation is supplied, so this project does not test the screenshot's specific skin-tone disparity hypothesis. Fixed P/QRS/ST/T windows are rough signal features, not clinically validated delineation. SHAP and LIME explain model behavior, not causality or clinical reasoning. See `docs/ETHICS_NOTES.md` for the FDA pulse-oximeter case study and references.", ""]
+    output_lines += ["", "## Limits", "", "MIT-BIH is a small historical ECG dataset with limited demographic metadata. The cohort audit uses available age and sex fields. Fixed P/QRS/ST/T windows are approximate signal features, not clinically validated delineation. SHAP and LIME describe model behavior, not causality or clinical reasoning. See `docs/ETHICS_NOTES.md` for the FDA pulse-oximeter case study and references.", ""]
     (args.out / "report.md").write_text("\n".join(output_lines), encoding="utf-8")
     print(f"Built {payload['n_beats']:,} annotated beat examples from {payload['n_records']} ECG records")
     print(f"Generated dashboard, report, and beat-level CSV in {args.out.resolve()}")
-    print("Synthetic skin-tone cohorts were not invented; MIT-BIH does not contain pigmentation labels.")
+    print("Group audits use the age and sex metadata available in MIT-BIH.")
 
 
 if __name__ == "__main__":
